@@ -3,6 +3,8 @@ name: Add Labels
 on:
   pull_request:
     types: opened
+  issue_comment:
+    types: created
 
 jobs:
   add_labels:
