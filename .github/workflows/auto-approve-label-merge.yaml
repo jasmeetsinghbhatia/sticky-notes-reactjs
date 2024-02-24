@@ -9,14 +9,20 @@ on:
 
 jobs:
   auto-approve:
+    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
     - uses: hmarr/auto-approve-action@v2
-      if: github.actor == 'dependabot[bot]'
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+  auto-label:
+    needs: auto-approve
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:  
     - uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: |
@@ -24,6 +30,12 @@ jobs:
           autoapprove
           dependabot-approved
           dependabot-merged
+  auto-merge:
+    needs: auto-label
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
     - id: automerge
       name: automerge
       uses: "pascalgn/automerge-action@v0.16.2"
