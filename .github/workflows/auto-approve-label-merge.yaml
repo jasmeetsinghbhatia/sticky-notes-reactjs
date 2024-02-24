@@ -1,0 +1,32 @@
+name: Auto approve, label and auto merge
+
+on:
+  pull_request:
+    types:
+        - synchronize
+        - opened
+        - edited
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: hmarr/auto-approve-action@v2
+      if: github.actor == 'dependabot[bot]'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions-ecosystem/action-add-labels@v1
+      with:
+        labels: |
+          automerge
+          autoapprove
+          dependabot-approved
+          dependabot-merged
+    - id: automerge
+      name: automerge
+      uses: "pascalgn/automerge-action@v0.16.2"
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        MERGE_LABELS: "automerge,dependabot-approved"
